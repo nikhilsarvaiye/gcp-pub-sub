@@ -31,6 +31,7 @@ namespace gcp_pub_sub
                     .UseSerilog()
                     .ConfigureServices((context, services) =>
                     {
+                        services.AddScoped<IPubSubService, PubSubService>();
                         services.AddHostedService<BUOneWorker>();
                     })
                     .Build();

@@ -6,21 +6,31 @@ namespace gcp_pub_sub
     public class BUOneWorker : BackgroundService
     {
         private readonly ILogger<BUOneWorker> _logger;
+        private readonly IPubSubService _pubSubService;
 
-        public BUOneWorker(ILogger<BUOneWorker> logger)
+        private const string ProjectId = "graphical-fort-306505";
+        private const string TopicId = "ns-pub-sub";
+        private const string SubscriptionId = "projects/graphical-fort-306505/subscriptions/ns-pub-sub-sub";
+
+        public BUOneWorker(ILogger<BUOneWorker> logger, IPubSubService pubSubService)
         {
             _logger = logger;
+            _pubSubService = pubSubService;
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             try
             {
-                while (!cancellationToken.IsCancellationRequested)
-                {                    
+                if (!cancellationToken.IsCancellationRequested)
+                {
                     _logger.LogInformation("Worker Running !!!");
 
-                    await Task.Delay(1000, cancellationToken);
+                    _pubSubService.SetProjectId(ProjectId);
+
+                    await _pubSubService.RunAsync("ns3-test-topic", "ns3-test-topic-subscription");
+
+                    // await Task.Delay(1000, cancellationToken);
                 }
             }
             catch (TaskCanceledException)
